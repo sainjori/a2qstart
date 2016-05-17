@@ -1,41 +1,42 @@
-import {Component, OnInit } from '@angular/core';
-import { Hero } from './models/hero';
-import { HeroDetailComponent } from './components/hero-detail.component';
+import { Component } from '@angular/core';
+import { RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS } from '@angular/router-deprecated';
 import { HeroService } from './services/hero.service';
+import { HeroesComponent } from './components/heroes/heroes.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { HeroDetailComponent } from './components/common/hero-detail/hero-detail.component';
 
 @Component({
-    selector: 'my-app',
-    directives: [HeroDetailComponent],
-    template: `
-    <h1>{{title}}</h1>
-    <h2>My Heroes</h2>
-    <ul class="heroes">
-    	<li *ngFor="let hero of heroes" 
-    	(click)="onSelect(hero)" 
-    	[class.selected]="hero === selectedHero">
-			<span class="badge">{{hero.id}}</span> {{hero.name}} 
-    	</li>
-    </ul>
-    <my-hero-detail [hero]="selectedHero"></my-hero-detail>
-    `,
-    styleUrls: ['app/app.component.css'],
-    providers: [HeroService]
-
+	selector: 'my-app',
+	template: `
+		<h1>{{title}}</h1>
+		<nav>		
+			<a [routerLink]= "['Dashboard']">Dashboard</a>
+			<a [routerLink]= "['Heroes']">Heroes</a>
+		</nav>		
+		<router-outlet></router-outlet>
+	`,
+	styleUrls: ['app/app.component.css'],
+	directives: [ROUTER_DIRECTIVES],
+	providers: [ROUTER_PROVIDERS, HeroService]
 })
-export class AppComponent implements OnInit{
+@RouteConfig([
+		{
+			path: '/heroes',
+			name: 'Heroes',
+			component: HeroesComponent
+		},	
+		{
+			path: '/detail/:id',
+			name: 'HeroDetail',
+			component: HeroDetailComponent
+		},	
+		{
+			path: '/dashboard',
+			name: 'Dashboard',
+			component: DashboardComponent,
+			useAsDefault: true
+		}	
+])
+export class AppComponent {
 	title = 'Tour of Heroes';
-	heroes: Hero[];
-	selectedHero: Hero;
-	ngOnInit(){
-		this.getHeroes();
-	}
-	constructor(private heroService: HeroService) {
-	}
-	onSelect(hero: Hero) {
-		this.selectedHero = hero;
-	}
-	getHeroes() {
-		this.heroService.getHeroes().then(heroes => this.heroes = heroes);
-		// this.heroService.getHeroesSlowly().then(heroes => this.heroes = heroes);
-	}
 }
